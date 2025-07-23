@@ -1,57 +1,31 @@
-// 'use client';
-
-// import type React from 'react';
-// import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-// import { WagmiProvider } from 'wagmi';
-// import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
-// import { config } from '@/utils/wagmi';
-
-// // import { config } from '';
-
-// const queryClient = new QueryClient();
-
-// export function Providers({ children }: { children: React.ReactNode }) {
-//     return (
-//         <WagmiProvider config={config}>
-//             <QueryClientProvider client={queryClient}>
-//                 <RainbowKitProvider>{children}</RainbowKitProvider>
-//             </QueryClientProvider>
-//         </WagmiProvider>
-//     );
-// }
-
-
-
-
 "use client";
 
-import { Web3AuthProvider, type Web3AuthContextConfig } from "@web3auth/modal/react";
-import { IWeb3AuthState, WEB3AUTH_NETWORK } from "@web3auth/modal";
-import { WagmiProvider } from "@web3auth/modal/react/wagmi";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React from "react";
+import React, { FC, ReactNode, useMemo } from "react";
+import {
+    ConnectionProvider,
+    WalletProvider
+} from "@solana/wallet-adapter-react";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import { clusterApiUrl } from "@solana/web3.js";
+import "@solana/wallet-adapter-react-ui/styles.css";
 
-const clientId = "BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw"; // get from https://dashboard.web3auth.io
-
-const queryClient = new QueryClient();
-
-const web3AuthContextConfig: Web3AuthContextConfig = {
-    web3AuthOptions: {
-        clientId,
-        web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
-        ssr: true,
-    }
-};
-
-export default function Provider({ children, web3authInitialState }:
-    { children: React.ReactNode, web3authInitialState: IWeb3AuthState | undefined }) {
-    return (
-        <Web3AuthProvider config={web3AuthContextConfig} initialState={web3authInitialState}>
-            <QueryClientProvider client={queryClient}>
-                <WagmiProvider>
-                    {children}
-                </WagmiProvider>
-            </QueryClientProvider>
-        </Web3AuthProvider>
-    );
+interface SolanaProviderProps {
+    children: ReactNode;
 }
+
+export const SolanaProvider: FC<SolanaProviderProps> = ({ children }) => {
+    // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'
+    const network = WalletAdapterNetwork.Devnet;
+
+    // You can also provide a custom RPC endpoint
+    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+
+    return (
+        <ConnectionProvider endpoint={endpoint}>
+            <WalletProvider wallets={[]} autoConnect>
+                <WalletModalProvider>{children}</WalletModalProvider>
+            </WalletProvider>
+        </ConnectionProvider>
+    );
+};

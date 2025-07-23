@@ -1,23 +1,26 @@
+// wagmi.ts
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import {
+    mainnet,
+    polygon,
+    optimism,
     arbitrum,
     base,
-    mainnet,
-    optimism,
-    polygon,
     sepolia,
 } from 'wagmi/chains';
+
+export const chains = [
+    mainnet,
+    polygon,
+    optimism,
+    arbitrum,
+    base,
+    ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true' ? [sepolia] : []),
+] as const; // ✅ important
 
 export const config = getDefaultConfig({
     appName: 'RainbowKit demo',
     projectId: 'YOUR_PROJECT_ID',
-    chains: [
-        mainnet,
-        polygon,
-        optimism,
-        arbitrum,
-        base,
-        ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true' ? [sepolia] : []),
-    ],
+    chains: chains,
     ssr: true,
 });
