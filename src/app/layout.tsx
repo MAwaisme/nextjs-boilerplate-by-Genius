@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Providers from "./Providers";
 import '@rainbow-me/rainbowkit/styles.css';
 import { cookieToWeb3AuthState } from "@web3auth/modal";
 import { headers } from "next/headers";
+import { Providers } from "./Providers";
 
 export const experimental_ppr = true
 
@@ -29,8 +29,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  const headersList = await headers();
-  const web3authInitialState = cookieToWeb3AuthState(headersList.get('cookie'));
+  // const headersList = await headers();
+  // const web3authInitialState = cookieToWeb3AuthState(headersList.get('cookie'));
 
   return (
     <html lang="en">
@@ -39,7 +39,7 @@ export default async function RootLayout({
         suppressHydrationWarning={true}
       >
         {/* {children} */}
-        <Providers web3authInitialState={web3authInitialState}>{children}</Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
